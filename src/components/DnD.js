@@ -6,7 +6,6 @@ import { GlobalContext } from "../App";
 import Dropdown from "./Dropdown";
 import { useAtom } from "jotai";
 import { spritesAtom } from "../utils/atoms";
-import CatSprite from "./CatSprite";
 
 Blockly.defineBlocksWithJsonArray([
   ...eventBlocks,
@@ -53,8 +52,9 @@ function DnD() {
   const [sprites, setSprites] = useAtom(spritesAtom);
 
   const options = [
-    { name: "Cat", src: <CatSprite /> },
-    { name: "Ball", src: <CatSprite /> },
+    { name: "Cat", src: "/cat.png" },
+    { name: "Ball", src: "/ball.png" },
+    { name: "Banana", src: "/banana.png" },
   ];
 
   const handleJsonChange = useCallback(
