@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import Phaser from "phaser";
+import { useAtom } from "jotai";
+import { spritesAtom } from "../utils/atoms";
 
 const PhaserGame = ({ width = 600, height = 600 }) => {
   const gameRef = useRef(null);
-
+  const [characters, setCharacters] = useAtom(spritesAtom);
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
@@ -35,36 +37,50 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
 
     // Preload assets
     function preload() {
-      this.load.image("sprite1", "cat.png");
-      this.load.image("sprite2", "ball.png");
+      //   this.load.image(`${characters[0]?.id}`, "cat.png");
+      //   this.load.image("sprite2", "ball.png");
+      characters.forEach((character) => {
+        this.load.image(`${character?.id}`, character?.src);
+      });
     }
 
     // Create the scene
     function create() {
       this.physics.world.setBounds(0, 0, width, height);
 
-      const spriteConfigs = [
-        {
-          key: "sprite1",
-          x: 100,
-          y: 100,
-          movements: [
-            { type: "move", x: 200, y: 100, duration: 1000 },
-            { type: "move", x: 400, y: 400, duration: 1000 },
-            { type: "rotate", degrees: 360, duration: 1000 },
-          ],
-        },
-        {
-          key: "sprite2",
-          x: 400,
-          y: 100,
-          movements: [
-            { type: "move", x: 20, y: 0, duration: 1000 },
-            { type: "rotate", degrees: -125, duration: 1000 },
-            { type: "move", x: 400, y: 400, duration: 1000 },
-          ],
-        },
-      ];
+      const xyz = characters.map((character) => {
+        return {
+          key: `${character?.id}`,
+          x: character?.left || 100,
+          y: character?.top || 100,
+          movements: [],
+        };
+      });
+
+      console.log(xyz);
+      const spriteConfigs = xyz;
+      //   const spriteConfigs = [
+      //     {
+      //       key: "1",
+      //       x: 100,
+      //       y: 100,
+      //       movements: [
+      //         { type: "move", x: 200, y: 100, duration: 1000 },
+      //         { type: "move", x: 400, y: 400, duration: 1000 },
+      //         { type: "rotate", degrees: 360, duration: 1000 },
+      //       ],
+      //     },
+      //     // {
+      //     //   key: "sprite2",
+      //     //   x: 400,
+      //     //   y: 100,
+      //     //   movements: [
+      //     //     { type: "move", x: 20, y: 0, duration: 1000 },
+      //     //     { type: "rotate", degrees: -125, duration: 1000 },
+      //     //     { type: "move", x: 400, y: 400, duration: 1000 },
+      //     //   ],
+      //     // },
+      //   ];
 
       spriteConfigs.forEach((config, index) => {
         const sprite = this.physics.add
@@ -193,7 +209,7 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
     return () => {
       game.destroy(true);
     };
-  }, [height, width]);
+  }, [height, width, characters]);
 
   return <div id="phaser-game-container" />;
 };

@@ -1,11 +1,18 @@
-import { useContext, useCallback, useMemo, useRef, useState } from "react";
+import {
+  useContext,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import { BlocklyWorkspace } from "react-blockly";
 import * as Blockly from "blockly";
 import { controlBlocks, eventBlocks, motionBlocks } from "../utils/constants";
 import { GlobalContext } from "../App";
 import Dropdown from "./Dropdown";
 import { useAtom } from "jotai";
-import { spritesAtom } from "../utils/atoms";
+import { currentSpriteAtom, lastSpriteAtom, spritesAtom } from "../utils/atoms";
 
 Blockly.defineBlocksWithJsonArray([
   ...eventBlocks,
@@ -46,10 +53,12 @@ function DnD() {
   const { setData } = useContext(GlobalContext);
   const toolboxConfig = useToolboxConfig();
   const workspaceConfig = useWorkspaceConfig();
-  const savedWorkspace = useRef({ 1: null, 2: null });
+  const savedWorkspace = useRef({ 1: null });
   const [selectedSprite, setSelectedSprite] = useState("Cat");
   const index = useRef(1);
   const [sprites, setSprites] = useAtom(spritesAtom);
+  const [currentSprite, setCurrentSprite] = useAtom(currentSpriteAtom);
+  const [lastSprite, setlastSprite] = useAtom(lastSpriteAtom);
 
   const options = [
     { name: "Cat", src: "/cat.png" },
@@ -88,11 +97,20 @@ function DnD() {
       id: ++index.current,
       name: option?.name,
       src: option?.src,
-      top: `${Math.random() * 500 + 50}px`,
-      left: `${Math.random() * 500 + 50}px`,
+      top: Math.random() * 350 + 70,
+      left: Math.random() * 350 + 70,
     };
     setSprites([...sprites, sprite]);
   };
+
+  useEffect(() => {
+    if (currentSprite) {
+      handleSave(lastSprite);
+      if (savedWorkspace?.current?.[currentSprite]) handleOpen(currentSprite);
+      setlastSprite(currentSprite);
+      console.log(lastSprite, currentSprite, sprites);
+    }
+  }, [currentSprite]);
 
   return (
     <div className="flex relative flex-col min-w-full h-full">
