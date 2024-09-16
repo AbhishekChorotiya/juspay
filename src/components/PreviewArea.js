@@ -1,18 +1,33 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CatSprite from "./CatSprite";
 import { useAtom } from "jotai";
 import { spritesAtom } from "../utils/atoms";
 import { Delete, Trash2 } from "lucide-react";
+import PhaserGame from "./Phaser";
 
 export default function PreviewArea() {
   const [sprites, setSprites] = useAtom(spritesAtom);
+  const divRef = useRef(null);
+  const [width, setWidth] = useState(600);
+  const [height, setHeight] = useState(600);
   const handleDelete = (id) => {
     const newSprites = sprites.filter((sprite) => sprite?.id !== id);
     setSprites(newSprites);
   };
+
+  useEffect(() => {
+    if (divRef.current) {
+      setWidth(divRef.current.offsetWidth);
+      setHeight(divRef.current.offsetHeight);
+    }
+  }, [divRef.current]);
+
   return (
     <div className="flex-col w-full h-full">
-      <div className="w-full h-3/5"></div>
+      <div ref={divRef} className="w-full relative h-3/5 overflow-hidden flex">
+        <PhaserGame width={width} height={height} />
+      </div>
+      <div className="w-full h-32 bg-red-300"></div>
       <div className="w-full  h-2/5 border-t-4 p-5 overflow-y-auto gap-5 flex flex-wrap border-blue-100">
         {sprites.map((sprite, i) => (
           <SpriteCard
