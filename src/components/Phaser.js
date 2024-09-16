@@ -1,15 +1,19 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Phaser from "phaser";
 import { useAtom } from "jotai";
-import { spritesAtom } from "../utils/atoms";
+import { currentAniamtionTypeAtom, spritesAtom } from "../utils/atoms";
 
 const PhaserGame = ({ width = 600, height = 600 }) => {
   const gameRef = useRef(null);
   const [characters, setCharacters] = useAtom(spritesAtom);
+  const [currentAniamtionType, setCurrentAnimationType] = useAtom(
+    currentAniamtionTypeAtom
+  );
+
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
-      parent: "phaser-game-container", // Add this line
+      parent: "phaser-game-container",
       backgroundColor: "#ffffff",
       physics: {
         default: "arcade",
@@ -53,7 +57,20 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
           key: `${character?.id}`,
           x: character?.left || 100,
           y: character?.top || 100,
-          movements: [],
+          movements: {
+            when_flag_clicked: [
+              { type: "move", x: 20, y: 0, duration: 1000 },
+              { type: "rotate", degrees: 15, duration: 1000 },
+            ],
+            when_sprite_clicked: [
+              { type: "rotate", degrees: 15, duration: 1000 },
+              { type: "steps", steps: 100, duration: 1000 },
+            ],
+            other: [
+              { type: "rotate", degrees: 15, duration: 1000 },
+              { type: "rotate", degrees: 15, duration: 1000 },
+            ],
+          },
         };
       });
 
@@ -89,7 +106,19 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
         setContainedSize(sprite, 100, 100);
         sprites.push(sprite);
 
-        sprite.animations = config.movements;
+        if (currentAniamtionType === "when_flag_clicked") {
+          sprite.animations = config.movements.when_flag_clicked;
+        } else if (currentAniamtionType === "when_sprite_clicked") {
+          sprite.animations = config.movements.when_sprite_clicked;
+        } else {
+          const tempAnimations = [];
+          for (let val in config.movements) {
+            tempAnimations.push(...config.movements[val]);
+          }
+          sprite.animations = tempAnimations;
+        }
+
+        sprite.id = config.key;
 
         animationsComplete[config.key] = false;
         totalAnimations[config.key] = sprite.animations.length;
@@ -111,7 +140,8 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
       }
 
       sprites.forEach((sprite, index) => {
-        executeAnimation(this, sprite, `sprite${index + 1}`);
+        console.log(sprite);
+        executeAnimation(this, sprite, sprite.id);
       });
     }
 
@@ -147,6 +177,21 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
         scene.tweens.add({
           targets: sprite,
           angle: sprite.angle + animation.degrees,
+          duration: animation.duration,
+          onComplete: () => {
+            currentAnimationIndex[spriteKey]++;
+            executeAnimation(scene, sprite, spriteKey);
+          },
+        });
+      } else if (animation.type === "steps") {
+        scene.tweens.add({
+          targets: sprite,
+          x:
+            sprite.x +
+            Math.cos(Phaser.Math.DegToRad(sprite.angle)) * animation.steps,
+          y:
+            sprite.y +
+            Math.sin(Phaser.Math.DegToRad(sprite.angle)) * animation.steps,
           duration: animation.duration,
           onComplete: () => {
             currentAnimationIndex[spriteKey]++;
@@ -209,7 +254,7 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
     return () => {
       game.destroy(true);
     };
-  }, [height, width, characters]);
+  }, [height, width, characters, currentAniamtionType]);
 
   return <div id="phaser-game-container" />;
 };
