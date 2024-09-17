@@ -311,7 +311,7 @@ const PhaserGame = forwardRef(
           default: "arcade",
           arcade: {
             gravity: { y: 0 },
-            debug: true,
+            // debug: true,
           },
         },
         scene: {
