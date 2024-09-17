@@ -12,7 +12,13 @@ import { controlBlocks, eventBlocks, motionBlocks } from "../utils/constants";
 import { GlobalContext } from "../App";
 import Dropdown from "./Dropdown";
 import { useAtom } from "jotai";
-import { currentSpriteAtom, lastSpriteAtom, spritesAtom } from "../utils/atoms";
+import {
+  currentSpriteAtom,
+  lastSpriteAtom,
+  MovementBlocksAtom,
+  spritesAtom,
+} from "../utils/atoms";
+import { convertBlocksToMovements } from "../utils/helpers";
 
 Blockly.defineBlocksWithJsonArray([
   ...eventBlocks,
@@ -59,6 +65,7 @@ function DnD() {
   const [sprites, setSprites] = useAtom(spritesAtom);
   const [currentSprite, setCurrentSprite] = useAtom(currentSpriteAtom);
   const [lastSprite, setlastSprite] = useAtom(lastSpriteAtom);
+  const [movementBlock, setMovementBlock] = useAtom(MovementBlocksAtom);
 
   const options = [
     { name: "Cat", src: "/cat.png" },
@@ -69,10 +76,20 @@ function DnD() {
   const handleJsonChange = useCallback(
     (e) => {
       console.log(e?.blocks?.blocks);
+      if (e?.blocks?.blocks) {
+        setMovementBlock((prev) => ({
+          ...prev,
+          [currentSprite]: convertBlocksToMovements(e?.blocks?.blocks),
+        }));
+      }
       setData(e?.blocks?.blocks);
     },
-    [setData]
+    [setData, currentSprite]
   );
+
+  useEffect(() => {
+    console.log(movementBlock);
+  }, [movementBlock]);
 
   function handleSave(id) {
     const currentWorkspace = Blockly.getMainWorkspace();

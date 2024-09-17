@@ -8,3 +8,4 @@ export const spritesAtom = atom([
 export const currentSpriteAtom = atom(1);
 export const lastSpriteAtom = atom(1);
 export const currentAniamtionTypeAtom = atom("all");
+export const MovementBlocksAtom = atom({});

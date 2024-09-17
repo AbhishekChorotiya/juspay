@@ -1,151 +1,52 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import Phaser from "phaser";
 import { useAtom } from "jotai";
-import { currentAniamtionTypeAtom, spritesAtom } from "../utils/atoms";
+import {
+  currentAniamtionTypeAtom,
+  MovementBlocksAtom,
+  spritesAtom,
+} from "../utils/atoms";
 
-const PhaserGame = ({ width = 600, height = 600 }) => {
-  const gameRef = useRef(null);
-  const [characters, setCharacters] = useAtom(spritesAtom);
-  const [currentAniamtionType, setCurrentAnimationType] = useAtom(
-    currentAniamtionTypeAtom
-  );
+const PhaserGame = forwardRef(
+  ({ width = 600, height = 600, allowCollide }, ref) => {
+    const gameRef = useRef(null);
+    const [characters, setCharacters] = useAtom(spritesAtom);
+    const [currentAniamtionType, setCurrentAnimationType] = useAtom(
+      currentAniamtionTypeAtom
+    );
+    const [movementBlock, setMovementBlock] = useAtom(MovementBlocksAtom);
 
-  useEffect(() => {
-    const config = {
-      type: Phaser.AUTO,
-      parent: "phaser-game-container",
-      backgroundColor: "#ffffff",
-      physics: {
-        default: "arcade",
-        arcade: {
-          gravity: { y: 0 },
-          debug: true,
-        },
-      },
-      scene: {
-        preload,
-        create,
-        update,
-      },
-    };
-
-    let sprites = [];
+    let spritesRef = useRef([]);
     let animationsComplete = {};
     let totalAnimations = {};
     let completedAnimations = {};
     let currentAnimationIndex = {};
+    const collideRef = useRef(allowCollide);
 
-    // Initialize Phaser game
-    const game = new Phaser.Game(config);
-    gameRef.current = game;
+    let movementBlockRef = useRef({});
 
-    // Preload assets
-    function preload() {
-      //   this.load.image(`${characters[0]?.id}`, "cat.png");
-      //   this.load.image("sprite2", "ball.png");
-      characters.forEach((character) => {
-        this.load.image(`${character?.id}`, character?.src);
-      });
+    function pauseGame(scene) {
+      scene.physics.world.pause();
+      scene.scene.pause();
     }
 
-    // Create the scene
-    function create() {
-      this.physics.world.setBounds(0, 0, width, height);
-
-      const xyz = characters.map((character) => {
-        return {
-          key: `${character?.id}`,
-          x: character?.left || 100,
-          y: character?.top || 100,
-          movements: {
-            when_flag_clicked: [
-              { type: "move", x: 20, y: 0, duration: 1000 },
-              { type: "rotate", degrees: 15, duration: 1000 },
-            ],
-            when_sprite_clicked: [
-              { type: "rotate", degrees: 15, duration: 1000 },
-              { type: "steps", steps: 100, duration: 1000 },
-            ],
-            other: [
-              { type: "rotate", degrees: 15, duration: 1000 },
-              { type: "rotate", degrees: 15, duration: 1000 },
-            ],
-          },
-        };
-      });
-
-      console.log(xyz);
-      const spriteConfigs = xyz;
-      //   const spriteConfigs = [
-      //     {
-      //       key: "1",
-      //       x: 100,
-      //       y: 100,
-      //       movements: [
-      //         { type: "move", x: 200, y: 100, duration: 1000 },
-      //         { type: "move", x: 400, y: 400, duration: 1000 },
-      //         { type: "rotate", degrees: 360, duration: 1000 },
-      //       ],
-      //     },
-      //     // {
-      //     //   key: "sprite2",
-      //     //   x: 400,
-      //     //   y: 100,
-      //     //   movements: [
-      //     //     { type: "move", x: 20, y: 0, duration: 1000 },
-      //     //     { type: "rotate", degrees: -125, duration: 1000 },
-      //     //     { type: "move", x: 400, y: 400, duration: 1000 },
-      //     //   ],
-      //     // },
-      //   ];
-
-      spriteConfigs.forEach((config, index) => {
-        const sprite = this.physics.add
-          .sprite(config.x, config.y, config.key)
-          .setCollideWorldBounds(true);
-        setContainedSize(sprite, 100, 100);
-        sprites.push(sprite);
-
-        if (currentAniamtionType === "when_flag_clicked") {
-          sprite.animations = config.movements.when_flag_clicked;
-        } else if (currentAniamtionType === "when_sprite_clicked") {
-          sprite.animations = config.movements.when_sprite_clicked;
-        } else {
-          const tempAnimations = [];
-          for (let val in config.movements) {
-            tempAnimations.push(...config.movements[val]);
-          }
-          sprite.animations = tempAnimations;
-        }
-
-        sprite.id = config.key;
-
-        animationsComplete[config.key] = false;
-        totalAnimations[config.key] = sprite.animations.length;
-        completedAnimations[config.key] = 0;
-        currentAnimationIndex[config.key] = 0;
-      });
-
-      for (let i = 0; i < sprites.length; i++) {
-        for (let j = i + 1; j < sprites.length; j++) {
-          this.physics.add.collider(
-            sprites[i],
-            sprites[j],
-            () =>
-              debouncedCollision.apply(this, [sprites[i], sprites[j], i, j]),
-            null,
-            this
-          );
-        }
+    async function checkAnimationsComplete(scene) {
+      if (
+        Object.keys(completedAnimations).every(
+          (key) => completedAnimations[key] === totalAnimations[key]
+        )
+      ) {
+        console.log("All animations completed.");
       }
-
-      sprites.forEach((sprite, index) => {
-        console.log(sprite);
-        executeAnimation(this, sprite, sprite.id);
-      });
     }
 
     function executeAnimation(scene, sprite, spriteKey) {
+      console.log(scene, sprite, spriteKey);
       if (currentAnimationIndex[spriteKey] >= sprite.animations.length) {
         animationsComplete[spriteKey] = true;
         completedAnimations[spriteKey] = totalAnimations[spriteKey];
@@ -201,11 +102,8 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
       }
     }
 
-    const debouncedCollision = debounce(handleCollision, 100, 3);
-
     function handleCollision(sprite1, sprite2) {
-      console.log("collision");
-
+      if (!collideRef.current) return;
       const sprite1Key = getSpriteKey(sprite1);
       const sprite2Key = getSpriteKey(sprite2);
 
@@ -228,36 +126,223 @@ const PhaserGame = ({ width = 600, height = 600 }) => {
       executeAnimation(this, sprite2, sprite2Key);
     }
 
-    function getSpriteKey(sprite) {
-      return sprite.texture.key;
+    function handlePlay() {
+      console.log("play");
+      spritesRef.current.forEach((sprite, index) => {
+        console.log(sprite);
+        executeAnimation(this, sprite, sprite.id);
+      });
+    }
+
+    useImperativeHandle(ref, () => ({
+      playAll: () => {
+        if (gameRef.current && gameRef.current.scene) {
+          const scene = gameRef.current.scene.scenes[0];
+          spritesRef.current.forEach((sprite, index) => {
+            const tempAnimations = [];
+            for (let val in movementBlockRef.current?.[sprite.id]) {
+              tempAnimations.push(
+                ...movementBlockRef.current?.[sprite.id]?.[val]
+              );
+            }
+            sprite.animations = tempAnimations;
+            currentAnimationIndex[sprite.id] = 0;
+            executeAnimation(scene, sprite, sprite.id);
+          });
+        }
+      },
+      flagClick: () => {
+        if (gameRef.current && gameRef.current.scene) {
+          const scene = gameRef.current.scene.scenes[0];
+          spritesRef.current.forEach((sprite, index) => {
+            sprite.animations =
+              movementBlockRef.current?.[sprite.id]?.["when_flag_clicked"] ||
+              [];
+
+            currentAnimationIndex[sprite.id] = 0;
+            executeAnimation(scene, sprite, sprite.id);
+          });
+        }
+      },
+      pause: () => {
+        if (gameRef.current && gameRef.current.scene) {
+          const scene = gameRef.current.scene.scenes[0];
+          pauseGame(scene);
+        }
+      },
+    }));
+
+    function addAnimations(sprite, config) {
+      if (currentAniamtionType === "when_flag_clicked") {
+        sprite.animations = config.movements.when_flag_clicked;
+      } else if (currentAniamtionType === "when_sprite_clicked") {
+        sprite.animations = config.movements.when_sprite_clicked;
+      } else {
+        const tempAnimations = [];
+        for (let val in config.movements) {
+          tempAnimations.push(...config.movements[val]);
+        }
+        sprite.animations = tempAnimations;
+      }
+    }
+
+    function preload() {
+      characters.forEach((character) => {
+        this.load.image(`${character?.id}`, character?.src);
+      });
+    }
+
+    useEffect(() => {
+      collideRef.current = allowCollide;
+    }, [allowCollide]);
+
+    function create(playType) {
+      this.physics.world.setBounds(0, 0, width, height);
+
+      const xyz = characters.map((character) => {
+        return {
+          key: `${character?.id}`,
+          x: character?.left || 100,
+          y: character?.top || 100,
+          movements: {
+            when_flag_clicked: [
+              { type: "move", x: 20, y: 0, duration: 500 },
+              { type: "rotate", degrees: 15, duration: 500 },
+            ],
+            when_sprite_clicked: [
+              { type: "rotate", degrees: 15, duration: 500 },
+              { type: "steps", steps: 100, duration: 500 },
+            ],
+            other: [
+              { type: "rotate", degrees: 15, duration: 500 },
+              { type: "rotate", degrees: 15, duration: 500 },
+            ],
+          },
+        };
+      });
+
+      const spriteConfigs = xyz;
+
+      spriteConfigs.forEach((config, index) => {
+        const sprite = this.physics.add
+          .sprite(config.x, config.y, config.key)
+          .setCollideWorldBounds(true)
+          .setInteractive({ draggable: true }); // Enable dragging
+
+        setContainedSize(sprite, 100, 100);
+        spritesRef.current.push(sprite);
+
+        // Add click listener to the sprite
+        sprite.on("pointerdown", () => {
+          console.log("da", movementBlockRef.current);
+          console.log(`Sprite ${sprite.id} clicked!`);
+          // Handle the sprite click (e.g., trigger when_sprite_clicked animations)
+          currentAnimationIndex[sprite.id] = 0;
+          sprite.animations =
+            movementBlockRef.current?.[sprite.id]?.when_sprite_clicked || [];
+          executeAnimation(this, sprite, sprite.id); // Start animation
+        });
+
+        // Enable dragging of sprite
+        this.input.setDraggable(sprite);
+
+        sprite.on("drag", (pointer, dragX, dragY) => {
+          // While dragging, update sprite position
+          sprite.x = dragX;
+          sprite.y = dragY;
+        });
+
+        sprite.on("dragstart", (pointer) => {
+          console.log(`Sprite ${sprite.id} drag started`);
+        });
+
+        sprite.on("dragend", (pointer) => {
+          console.log(`Sprite ${sprite.id} drag ended`);
+        });
+
+        addAnimations(sprite, config);
+
+        sprite.id = config.key;
+
+        animationsComplete[config.key] = false;
+        totalAnimations[config.key] = sprite.animations.length;
+        completedAnimations[config.key] = 0;
+        currentAnimationIndex[config.key] = 0;
+      });
+
+      const debouncedCollision = debounce(
+        handleCollision,
+        100,
+        spritesRef.current.length
+      );
+
+      for (let i = 0; i < spritesRef.current.length; i++) {
+        for (let j = i + 1; j < spritesRef.current.length; j++) {
+          this.physics.add.collider(
+            spritesRef.current[i],
+            spritesRef.current[j],
+            () =>
+              debouncedCollision.apply(this, [
+                spritesRef.current[i],
+                spritesRef.current[j],
+                i,
+                j,
+              ]),
+            null,
+            this
+          );
+        }
+      }
+
+      if (playType === "playAll") handlePlay.call(this);
     }
 
     function update() {}
 
-    async function checkAnimationsComplete(scene) {
-      if (
-        Object.keys(completedAnimations).every(
-          (key) => completedAnimations[key] === totalAnimations[key]
-        )
-      ) {
-        console.log("All animations completed. Pausing the game.");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        pauseGame(scene);
+    function initGame() {
+      if (gameRef.current) {
+        gameRef.current.destroy(true);
       }
+      const config = {
+        type: Phaser.AUTO,
+        parent: "phaser-game-container",
+        backgroundColor: "#ffffff",
+        physics: {
+          default: "arcade",
+          arcade: {
+            gravity: { y: 0 },
+            debug: true,
+          },
+        },
+        scene: {
+          preload,
+          create,
+          update,
+        },
+      };
+
+      // Initialize Phaser game
+      const game = new Phaser.Game(config);
+      gameRef.current = game;
     }
 
-    function pauseGame(scene) {
-      scene.physics.world.pause();
-      scene.scene.pause();
-    }
+    useEffect(() => {
+      if (movementBlock) {
+        movementBlockRef.current = movementBlock;
+      }
+    }, [movementBlock]);
 
-    return () => {
-      game.destroy(true);
-    };
-  }, [height, width, characters, currentAniamtionType]);
+    useEffect(() => {
+      initGame();
 
-  return <div id="phaser-game-container" />;
-};
+      return () => {
+        gameRef.current.destroy(true);
+      };
+    }, [height, width, characters, currentAniamtionType]);
+
+    return <div id="phaser-game-container" />;
+  }
+);
 
 export default PhaserGame;
 
@@ -289,4 +374,7 @@ function debounce(func, wait, size) {
       wait
     );
   };
+}
+function getSpriteKey(sprite) {
+  return sprite.texture.key;
 }
