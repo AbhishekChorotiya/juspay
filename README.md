@@ -1,70 +1,67 @@
-# Getting Started with Create React App
+# Scratch-like Animation Playground
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A project inspired by the MIT Scratch app, built using **React**, **TailwindCSS**, **npm Blockly**, and **Phaser**. This application allows users to create and animate multiple sprites, implement motion controls, and utilize drag-and-drop blocks for interactive sprite manipulation.
 
-## Available Scripts
+Live: https://juspay-delta.vercel.app/
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+### 1. Motion Animations
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Under the "Motion" category, the following animations are available:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Move \_\_\_\_ steps**: Moves a sprite by the specified number of steps.
+- **Turn \_\_\_\_ degrees**: Rotates a sprite by a given number of degrees.
+- **Go to x: **_ y: _****: Moves the sprite to specified x and y coordinates.
+- **Repeat Animation**: Loops the motion block(s) as long as specified.
 
-### `npm test`
+### 2. Multiple Sprites Support
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Ability to create and animate multiple sprites.
+- Each sprite can have its own motion animation.
+- A "Play" button starts animations for all sprites simultaneously.
 
-### `npm run build`
+### 3. Hero Feature: Collision-Based Animation Swap
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- When two sprites collide, their animations swap dynamically.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React**: For building the UI components.
+- **TailwindCSS**: For easy, responsive styling.
+- **Blockly**: For implementing drag-and-drop functionality similar to the Scratch interface.
+- **Phaser**: For sprite animation and collision detection.
 
-### `npm run eject`
+## How to Use
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Clone this repository:
+   ```bash
+   https://github.com/AbhishekChorotiya/juspay
+   ```
+2. Navigate into the project directory:
+   ```bash
+   cd juspay
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Run the project:
+   ```bash
+   npm start
+   ```
+5. Access the app at `http://localhost:3000`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Screenshots
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+![App Screenshot](https://github.com/AbhishekChorotiya/juspay/blob/main/public/ss1.png)
+![App Screenshot](https://github.com/AbhishekChorotiya/juspay/blob/main/public/ss2.png)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Contact Information
 
-## Learn More
+For any inquiries or clarifications, please contact:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Name: Abhishek Chorotiya
+- Email: code.abhi8678@gmail.com
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
