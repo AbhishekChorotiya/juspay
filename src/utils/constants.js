@@ -104,7 +104,7 @@ export const eventBlocks = [
   },
   {
     type: "when_sprite_clicked",
-    message0: "when this sprite clicked",
+    message0: "when sprite is clicked",
     category: "event",
     nextStatement: true,
     colour: "#ffbf00",
@@ -120,21 +120,21 @@ export const controlBlocks = [
       {
         type: "field_number",
         name: "times",
-        value: 10, // Default number of iterations
-        min: 1, // Minimum number of iterations
+        value: 10,
+        min: 1,
       },
     ],
-    message1: "%1", // Placeholder for the blocks inside the repeat loop
+    message1: "%1",
     args1: [
       {
         type: "input_statement",
-        name: "DO", // Statement input allows you to nest blocks
+        name: "DO",
       },
     ],
     previousStatement: true,
     nextStatement: true,
-    colour: "#ffab19", // Orange color typically used for control blocks
+    colour: "#ffab19",
     tooltip: "Repeats the enclosed blocks a specific number of times.",
-    helpUrl: "", // Link to documentation if needed
+    helpUrl: "",
   },
 ];

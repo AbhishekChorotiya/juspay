@@ -87,10 +87,6 @@ function DnD() {
     [setData, currentSprite]
   );
 
-  useEffect(() => {
-    console.log(movementBlock);
-  }, [movementBlock]);
-
   function handleSave(id) {
     const currentWorkspace = Blockly.getMainWorkspace();
     savedWorkspace.current[id] =
@@ -100,11 +96,13 @@ function DnD() {
   function handleOpen(id) {
     const workspace = Blockly.getMainWorkspace();
     if (workspace) {
-      workspace.clear(); // Clear workspace before loading new state
-      Blockly.serialization.workspaces.load(
-        savedWorkspace.current[id],
-        workspace
-      );
+      workspace.clear();
+      if (savedWorkspace.current[id]) {
+        Blockly.serialization.workspaces.load(
+          savedWorkspace.current[id],
+          workspace
+        );
+      }
     }
   }
 

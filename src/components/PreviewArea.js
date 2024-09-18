@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CatSprite from "./CatSprite";
 import { useAtom } from "jotai";
 import { currentSpriteAtom, spritesAtom } from "../utils/atoms";
-import { Check, Delete, Flag, Play, Trash2, X } from "lucide-react";
+import { Check, Delete, Flag, Play, RotateCcw, Trash2, X } from "lucide-react";
 import PhaserGame from "./Phaser";
 
 export default function PreviewArea() {
@@ -39,7 +39,7 @@ export default function PreviewArea() {
   }, [divRef.current]);
 
   return (
-    <div className="flex-col w-full h-full">
+    <div className="flex-col w-full h-full relative">
       <div ref={divRef} className="w-full relative h-3/5 overflow-hidden flex">
         <PhaserGame
           ref={phaserRef}
@@ -89,6 +89,12 @@ export default function PreviewArea() {
           />
         ))}
       </div>
+      <button
+        onClick={() => window.location.reload()}
+        className="absolute top-0 flex items-center justify-center rounded-bl-xl right-0 w-10 h-10 bg-yellow-400"
+      >
+        <RotateCcw className="text-black" />
+      </button>
     </div>
   );
 }
