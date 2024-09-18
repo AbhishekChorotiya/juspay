@@ -75,7 +75,6 @@ function DnD() {
 
   const handleJsonChange = useCallback(
     (e) => {
-      console.log(e?.blocks?.blocks);
       if (e?.blocks?.blocks) {
         setMovementBlock((prev) => ({
           ...prev,
@@ -123,7 +122,6 @@ function DnD() {
       handleSave(lastSprite);
       if (savedWorkspace?.current?.[currentSprite]) handleOpen(currentSprite);
       setlastSprite(currentSprite);
-      console.log(lastSprite, currentSprite, sprites);
     }
   }, [currentSprite]);
 
