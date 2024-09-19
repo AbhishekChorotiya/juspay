@@ -205,7 +205,7 @@ const PhaserGame = forwardRef(({ width = 600, height = 600 }, ref) => {
     });
 
     const spriteConfigs = xyz;
-
+    spritesRef.current = [];
     spriteConfigs.forEach((config) => {
       const sprite = this.physics.add
         .sprite(config.x, config.y, config.key)
