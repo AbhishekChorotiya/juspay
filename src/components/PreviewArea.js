@@ -86,7 +86,7 @@ const SpriteCard = ({
 }) => {
   return (
     <div
-      className={`w-24 h-24 flex items-center relative justify-center rounded-lg border-2  object-contain ${
+      className={`w-24 cursor-pointer h-24 flex items-center relative justify-center rounded-lg border-2  object-contain ${
         active ? " border-green-500 bg-green-200" : "border-orange-300"
       }`}
       onClick={() => setCurrentSprite(id)}
