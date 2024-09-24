@@ -107,10 +107,10 @@ const PhaserGame = forwardRef(({ width = 600, height = 600 }, ref) => {
     this.tweens.killTweensOf(sprite2);
 
     const tempAnimations = sprite1.animations.slice(
-      currentAnimationIndex[sprite1Key] + 1
+      currentAnimationIndex[sprite1Key]
     );
     sprite1.animations = sprite2.animations.slice(
-      currentAnimationIndex[sprite2Key] + 1
+      currentAnimationIndex[sprite2Key]
     );
     sprite2.animations = tempAnimations;
 

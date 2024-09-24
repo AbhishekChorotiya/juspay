@@ -7,7 +7,7 @@ export const motionBlocks = [
       {
         type: "field_number",
         name: "x_position",
-        value: 20,
+        value: 100,
       },
     ],
     previousStatement: true,
@@ -28,7 +28,7 @@ export const motionBlocks = [
       {
         type: "field_number",
         name: "angle",
-        value: 15,
+        value: 45,
         min: 0,
         max: 360,
       },
@@ -51,7 +51,7 @@ export const motionBlocks = [
       {
         type: "field_number",
         name: "angle",
-        value: 15,
+        value: 45,
         min: 0,
         max: 360,
       },
@@ -120,7 +120,7 @@ export const controlBlocks = [
       {
         type: "field_number",
         name: "times",
-        value: 10,
+        value: 2,
         min: 1,
       },
     ],
